@@ -5,7 +5,6 @@
 require('dotenv').config();
 var express = require('express');
 var app = express();
-var parser = require('ua-parser-js');
 
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
@@ -18,13 +17,12 @@ app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/api/whoami", function (req, res) {
-  let ua = parser(req.get('user-agent'))
   let response={};
  response['ipaddress'] = req.headers['x-forwarded-for'] ||
      req.connection.remoteAddress ||
      req.socket.remoteAddress ||
      req.connection.socket.remoteAddress;
-  response['software'] = ua.ua;
+  response['software'] = req.get('user-agent');
    response['language'] = req.get('accept-language')
   res.json(response);
 });
