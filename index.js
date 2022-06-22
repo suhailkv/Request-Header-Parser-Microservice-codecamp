@@ -5,6 +5,8 @@
 require('dotenv').config();
 var express = require('express');
 var app = express();
+var parser = require('ua-parser-js');
+
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -15,8 +17,16 @@ app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 20
 app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
+app.get("/api/whoami", function (req, res) {
+  let ua = parser(req.get('user-agent'))
+  let response={};
+ response['ipaddress'] = req.headers['x-forwarded-for'] ||
+     req.connection.remoteAddress ||
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress;
+  response['software'] = ua.ua;
+   response['language'] = req.get('accept-language')
+  res.json(response);
 });
 
 
